@@ -7,16 +7,22 @@ app = Flask(__name__)
 
 full_data = []
 
-current_data = full_data.copy()
+current_data = []
 
 json_file_info = ["nvdcve-1.0-recent.json"]#, "nvdcve-1.0-modified.json"]
 
-def getInput(fileName):
+def reset_test():
+    global full_data
+    global current_data
+    full_data = []
+    current_data= full_data.copy()
+
+def get_input(fileName):
     with open(fileName) as f:
         data = json.load(f)
     return data
 
-def processInput(data):
+def process_input(data):
     for i in data["CVE_Items"]:
         entry = {}
         entry["ID"] = i["cve"]["CVE_data_meta"]["ID"]
@@ -45,13 +51,14 @@ def processInput(data):
             entry["metricV2BaseScore"] = -1
             entry["metricV3BaseScore"] = -1
 
-        entry["publishedDate"] = i["publishedDate"]
-        entry["lastModifiedDate"] = i["lastModifiedDate"]
+        entry["publishedDate"] = i["publishedDate"] if "publishedDate" in i else "N/A"
+        entry["lastModifiedDate"] = i["lastModifiedDate"] if "lastModifiedDate" in i else "N/A"
         full_data.append(entry)
+    return full_data
 
-def testFunction():
-    data = getInput("test.json")
-    processInput(data)
+def test_function():
+    data = get_input("testingJsons/test.json")
+    process_input(data)
     global current_data
     current_data = full_data.copy()
     return full_data
@@ -59,8 +66,8 @@ def testFunction():
 @app.route('/', methods=['GET', 'POST'])
 def start():
     for json in json_file_info:
-       data = getInput(json)
-       processInput(data)
+       data = get_input(json)
+       process_input(data)
     global current_data
     current_data = full_data.copy()
     #print(current_data)
@@ -73,11 +80,17 @@ def get_data():
 @app.route('/getDataOrdered/<field>/<reverse>', methods=['GET'])
 def get_data_ordered(field, reverse=None):
     global current_data
+#    print(current_data)
+#    print("\n")
     if reverse == 'true':
         data = sorted(current_data, key=itemgetter(field), reverse=True)
     else:
         data = sorted(current_data, key=itemgetter(field), reverse=False)
+#    print(data)
+#    print("\n")
     current_data = data
+#    print(current_data)
+#    print("\n\n")
     return jsonify(current_data)
 
 @app.route('/getDataQuery/', methods=['GET'])
