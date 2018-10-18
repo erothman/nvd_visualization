@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html ng-app="VulnerabilityTableApp">
+  <head>
+    <link rel="stylesheet" href="../static/styles.css">
+  </head>
+  <body ng-controller="TableCtrl">
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+  <script src="../static/main.js"></script>
+<!--<script src="../static/main.js"></script>
+    <table>
+    </table>-->
+    {% raw %}
+    <span ng-show="showEntry">{{ dataEntry }}</span>
+    <button ng-click="hideEntry()" ng-show="showEntry">Close Detailed View</button>
+    {% endraw %}
+    <form>
+      Search Term: <input type="text" ng-model="queryTerm"> <button ng-click="getQueriedData()">Search</button> <button ng-click="queryTerm = ''; getQueriedData();">Reset</button>
+    </form>
+    <span></span>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th ng-click="getOrganizedData('ID')"> ID <arrow ng-class="(reverse && alphField == 'ID') ? 'decaret' : 'caret'"></arrow></th>
+          <th ng-click="getOrganizedData('problem_type')">Problem Type <arrow ng-class="(reverse && alphField == 'problem_type') ? 'decaret' : 'caret'"></arrow></th>
+          <th ng-click="getOrganizedData('description')">Description <arrow ng-class="(reverse && alphField == 'description') ? 'decaret' : 'caret'"></arrow></th>
+          <th ng-click="getOrganizedData('accessVector')">Access Vector <arrow ng-class="(reverse && alphField == 'accessVector') ? 'decaret' : 'caret'"></arrow></th>
+          <th ng-click="getOrganizedData('severity')">Severity <arrow ng-class="(reverse && alphField == 'severity') ? 'decaret' : 'caret'"></arrow></th>
+          <th ng-click="getOrganizedData('metricV2BaseScore')">MetricV2 Base Score <arrow ng-class="(reverse && alphField == 'metricV2BaseScore') ? 'decaret' : 'caret'"></arrow></th>
+          <th ng-click="getOrganizedData('metricV3BaseScore')">MetricV3 Base Score <arrow ng-class="(reverse && alphField == 'metricV3BaseScore') ? 'decaret' : 'caret'"></arrow></th>
+          <th ng-click="getOrganizedData('publishedDate')">Published Date <arrow ng-class="(reverse && alphField == 'publishedDate') ? 'decaret' : 'caret'"></arrow></th>
+        </tr>
+      </thead>
+      <tbody>
+      {% raw %}
+        <tr ng-repeat="x in vulnerabilities" ng-click="selectEntry(x)">
+          <td>{{ x.ID }}</td>
+          <td>{{ x.problem_type }}</td>
+          <td>{{ x.description }}</td>
+          <td>{{ x.accessVector }}</td>
+          <td>{{ x.severity }}</td>
+          <td>{{ x.metricV2BaseScore }}</td>
+          <td>{{ x.metricV3BaseScore }}</td>
+          <td>{{ x.publishedDate }}</td>
+        </tr>
+        {% endraw %}
+      </tbody>
+    </table>
+  </body>
+</html>
