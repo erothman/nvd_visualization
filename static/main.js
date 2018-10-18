@@ -31,33 +31,15 @@
             });
         }
         $scope.selectEntry = function(x) {
-            $scope.dataEntry = x;
+            $scope.dataEntry = x;//angular.toJson(x);
             $scope.showEntry = true;
         }
         $scope.hideEntry = function() {
             $scope.showEntry = false;
         }
-/*        $scope.openModalData = function(x) {
-            $log.log(x)
-            var modalInstance = $uibModal.open({
-              templateUrl: '../templates/modal.html',
-              controller: 'ModalInstanceCtrl',
-              size: 'lg',
-              resolve: {
-                data: function () {
-                  return x;
-                }
-              }
-            });
-        }*/
+        $scope.goToTop = function() {
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+        }
 }]);
-
-/*angular.module('VulnerabilityTableApp').controller('ModalInstanceCtrl', function ($uibModalInstance, data) {
-  var modal = this;
-  modal.data = data;
-  
-  modal.exit = function () {
-    $uibModalInstance.close();
-  };
-});*/
 }());

@@ -2,21 +2,21 @@
 <html ng-app="VulnerabilityTableApp">
   <head>
     <link rel="stylesheet" href="../static/styles.css">
+    <title>National Vulnerability Database Table and Information</title>
+    <div class="title">National Vulnerability Database Table and Information</div>
   </head>
   <body ng-controller="TableCtrl">
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
   <script src="../static/main.js"></script>
-<!--<script src="../static/main.js"></script>
-    <table>
-    </table>-->
     {% raw %}
-    <span ng-show="showEntry">{{ dataEntry }}</span>
-    <button ng-click="hideEntry()" ng-show="showEntry">Close Detailed View</button>
+    <pre ng-show="showEntry" style="border:1px solid black; padding: 5px; width:auto; height:200%; overflow:auto">{{dataEntry | json}}</pre>
+    <button ng-click="hideEntry();" ng-show="showEntry">Close Detailed View</button>
+    <p ng-show="showEntry"></p>
     {% endraw %}
     <form>
       Search Term: <input type="text" ng-model="queryTerm"> <button ng-click="getQueriedData()">Search</button> <button ng-click="queryTerm = ''; getQueriedData();">Reset</button>
     </form>
-    <span></span>
+    <br />
     <table class="table table-striped">
       <thead>
         <tr>
@@ -32,7 +32,7 @@
       </thead>
       <tbody>
       {% raw %}
-        <tr ng-repeat="x in vulnerabilities" ng-click="selectEntry(x)">
+        <tr ng-repeat="x in vulnerabilities" ng-click="selectEntry(x); goToTop()">
           <td>{{ x.ID }}</td>
           <td>{{ x.problem_type }}</td>
           <td>{{ x.description }}</td>
