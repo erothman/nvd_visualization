@@ -2,3 +2,84 @@
 
 Written by Eric Rothman
 Email: erothma6@jhu.edu
+
+What is NVD_Visualization?
+
+NVD Visualization is a way to visualize the National Vulnerability Database json formatted inputs as a table for easy searching, sorting and viewing.
+It also sorts through the inputted data and retains only the most recent version of every vulnerability depending on the ID assigned to it.
+Finally to help deal with the data easily, certain unnecessary fields of the data were removed, only keeping the essential ones.
+
+Why?
+
+As I was looking at different public databases of knowned vulnerabilites, bad ip addresses, and other cryptographic weaknesses, I noticed that the data from the National Vulnerability Database was especially hard to parse.
+
+Every entry in the dataset had a lot of different fields to it, and there are alot of unnecessary data steps in the structure ot it.
+This makes it hard to understand for a casual viewer of the data and without a program to parse it into more viewable and understandable data.
+So I decided to make a web application that takes some of the more recent json files and displays them as an easy to understand table.
+I also wanted to make it so that if a viewer was interested in a specific attack, they could get all the necessary information without having to have every field be represented in the table.
+
+How to run and use it?
+
+There are two programs in the repository that can be run, app.py which is the actual application, and serverUnitTests.py which is the unit tests for the app.py, the server.
+
+To run either program, python3, flask, and flask-jsonpify must be installed on the computer.
+
+To run the tests, use: python3 -m unittest serverUnitTests.py
+To run the actual program, use: python3 app.py
+
+serverUnitTests.py will run a bunch of unit tests on app.py.
+It will display what went wrong if any of the tests fail.
+Another way to run the unit tests is to use the Travis CI.
+A prewritten .travis.yml file is included in the repository just for that express purpose.
+If you use the Travis CI, you will not need to download any of the requirements to run the unit test.
+
+When you run the actual program with the command python3 app.py, the application will start running on localhost:8080 using only the information from nvdcve-1.0-recent.json
+If you want it to run on a different location, go into app.py before starting the program and change the port and host at the bottom of the file.
+The line you want to change is: app.run(host='localhost', port=8080).
+
+If you want the application to run on a different json from the National Vulnerability Database, or on multiple ones you need to change a different line in app.py before launching.
+Change the line: json_file_info = ["nvdcve-1.0-recent.json"]
+Whatever names of files is in that list at launch time will be the files that are used as data.
+If you want to change the file used, change nvdcve-1.0-recent.json to the name and path to whatever file you are using as input.
+If you want to add an additional file as data, change the line to: json_file_info = ["nvdcve-1.0-recent.json", "path_to_json_file/file_name.json"]
+
+NOTE: The file nvdcve-1.0-modified.json is included in the repository also.
+That file is very large though, so if used as either the main file or as an additional file, the application will take longer to run and compute changes.
+If you are using that file or an amount of data similar or greater to the amount in the file and the application does not change immediately after interaction, wait a few seconds for the program to finish computation and updating the page.
+It will change, but it might take a few seconds.
+
+
+Once the application is launched and the user is on localhost:8080, or whatever host and port they directed the application to run in, they should see the table immediatly.
+
+The table is split into 8 different fields.
+The first field, ID, is the ID associated with that vulnerability. Only one of every ID will be displayed, at most, in the table.
+If two vulnerabilities with the same ID are used as data, the program will use whichever one was modified the most recently.
+Most of the rest of the fields are as specified as in the NDV files.
+
+There are some minor changes to the data.
+If a field was not in an entry of the data, except for the ID which is mandatory, than either one of two values represents the lack of data.
+If the field is not a score, the lack of data is represented by a N/A.
+If the field is a score though, the lack of data is represented by -1.
+This is done because the scores in NVD can never go below 0, so it would never be interpretated as an actual score.
+The reason it is not also represented as an N/A is for sorting and analysis of the "cleaned up" data.
+
+
+Besides scrolling and viewing the page, there are several different ways a user can interact with the application after startup.
+
+If the user clicks on one of the headers of the table, the table will become organized in ascending order by the field of the header that was clicked.
+If the header is clicked again, the order will reverse.
+Which field the table is organized by is shown by an arrow being to the right of the header of that field.
+Whether the arrow is up or down signifies whether the data is in ascending or descending order.
+
+The next thing the user can do to view the graph is that there is a search bar at the top of the page.
+When a keyword is typed into the bar and searched, the table will change to only contain entries that have the keyword in atleast one of their data fields, not necessarily just the data fields displayed on the table.
+If the user wants to reset the table to display all the entries, they can just hit the reset button which will also delete the search bar.
+
+Finally if a user wants to learn more information about any of the entries on the table, they can just click the entry.
+When an entry is clicked, the page goes to the top and all the information about that entry that is saved will be displayed.
+This includes more than just the information displayed in the table, including things that can only be represented as a list of items.
+If the user wants to select a different entry, they just need to click it and the detailed view will change to display details about the new entry.
+If the entries become annoying to the viewer, they can get rid of the detailed view by hitting the Close Detailed View button underneath the detailed description.
+
+These are the capabilities of NVD_Visualization and how to run it.
+I hope that it is helpful in any processing of NVD information that is in the new json format.
