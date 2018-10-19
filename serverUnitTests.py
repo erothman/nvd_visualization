@@ -1,5 +1,6 @@
 import unittest
 import json
+import copy
 from app import *
 
 
@@ -20,9 +21,9 @@ class TestServerInputAndProcessing(unittest.TestCase):
         affects = {"vendor": {"vendor_data": [{"vendor_name": "vend", "product": {"product_data": [{"product_name": "prod"}]}}]}}
         cve = {"CVE_data_meta": {"ID": "CV-10", "other": "fail"}, "affects": affects, "problemtype": problem_type, "description": description, "references": references}
         impact = {"baseMetricV2": {"cvssV2": {"accessVector": "attack", "baseScore": 10}, "severity": "HIGH", "exploitabilityScore":4, "impactScore":2}, "baseMetricV3": {"cvssV3": {"baseScore": 9}, "exploitabilityScore": 3, "impactScore": 1}}
-        test_data["CVE_Items"].append({"cve": cve, "impact": impact, "extra": {"test": "fail"}, "publishedDate": "may", "lastModifiedDate": "today"})
+        test_data["CVE_Items"].append({"cve": cve, "impact": impact, "extra": {"test": "fail"}, "publishedDate": "the month of may", "lastModifiedDate": "this day"})
         processed = process_input(test_data)
-        good_output = [{"ID": "CV-10", "problem_type": "BAD", "references": ["TEST"], "vendors_affected":["vend"], "products_affected":["prod"], "description": "Described", "accessVector": "attack", "severity": "HIGH", "metricV2BaseScore": 10, "metricV3BaseScore": 9, "metricV2ExploitabilityScore": 4, "metricV3ExploitabilityScore": 3, "metricV2ImpactScore": 2, "metricV3ImpactScore": 1, "publishedDate": "may", "lastModifiedDate": "today"}]
+        good_output = [{"ID": "CV-10", "problem_type": "BAD", "references": ["TEST"], "vendors_affected":["vend"], "products_affected":["prod"], "description": "Described", "accessVector": "attack", "severity": "HIGH", "metricV2BaseScore": 10, "metricV3BaseScore": 9, "metricV2ExploitabilityScore": 4, "metricV3ExploitabilityScore": 3, "metricV2ImpactScore": 2, "metricV3ImpactScore": 1, "publishedDate": "the month of may", "lastModifiedDate": "this day"}]
         self.assertEqual(len(processed[0]), len(good_output[0]))
         self.assertEqual(len(processed), 1)
         for key, value in good_output[0].items():
@@ -45,9 +46,9 @@ class TestServerInputAndProcessing(unittest.TestCase):
         affects = {"vendor": {"vendor_data": []}}
         cve = {"CVE_data_meta": {"ID": "CV-11", "other": "fail"}, "affects": affects,"problemtype": problem_type, "description": description, "references": references}
         impact = {"baseMetricV2": {"cvssV2": {"accessVector": "attack", "baseScore": 10}, "severity": "HIGH", "exploitabilityScore": 4, "impactScore": 2}}
-        test2_data["CVE_Items"].append({"cve": cve, "impact": impact, "extra": {"test": "fail"}, "lastModifiedDate": "today"})
+        test2_data["CVE_Items"].append({"cve": cve, "impact": impact, "extra": {"test": "fail"}, "lastModifiedDate": "this day"})
         processed = process_input(test2_data)
-        good_output = [{"ID": "CV-10", "problem_type": "N/A", "description": "N/A", "references": [], "vendors_affected": ["vend"], "products_affected": [],"accessVector": "N/A", "severity": "N/A", "metricV2BaseScore": -1.0, "metricV3BaseScore": -1.0, "metricV2ExploitabilityScore": -1.0, "metricV3ExploitabilityScore": -1.0, "metricV2ImpactScore": -1.0, "metricV3ImpactScore": -1.0, "publishedDate": "N/A", "lastModifiedDate": "N/A"}, {"ID": "CV-11", "problem_type": "N/A", "description": "Described", "accessVector": "attack", "severity": "HIGH", "references": [], "vendors_affected": [], "products_affected": [], "metricV2BaseScore": 10, "metricV3BaseScore": -1.0, "metricV2ExploitabilityScore": 4, "metricV3ExploitabilityScore": -1.0, "metricV2ImpactScore": 2, "metricV3ImpactScore": -1.0, "publishedDate": "N/A", "lastModifiedDate": "today"}]
+        good_output = [{"ID": "CV-10", "problem_type": "N/A", "description": "N/A", "references": [], "vendors_affected": ["vend"], "products_affected": [],"accessVector": "N/A", "severity": "N/A", "metricV2BaseScore": -1.0, "metricV3BaseScore": -1.0, "metricV2ExploitabilityScore": -1.0, "metricV3ExploitabilityScore": -1.0, "metricV2ImpactScore": -1.0, "metricV3ImpactScore": -1.0, "publishedDate": "N/A", "lastModifiedDate": "N/A"}, {"ID": "CV-11", "problem_type": "N/A", "description": "Described", "accessVector": "attack", "severity": "HIGH", "references": [], "vendors_affected": [], "products_affected": [], "metricV2BaseScore": 10, "metricV3BaseScore": -1.0, "metricV2ExploitabilityScore": 4, "metricV3ExploitabilityScore": -1.0, "metricV2ImpactScore": 2, "metricV3ImpactScore": -1.0, "publishedDate": "N/A", "lastModifiedDate": "this day"}]
         self.assertEqual(len(processed[0]), len(good_output[0]))
         self.assertEqual(len(processed[1]), len(good_output[1]))
         self.assertEqual(len(processed), 2)
@@ -56,6 +57,35 @@ class TestServerInputAndProcessing(unittest.TestCase):
         for key2, value2 in good_output[1].items():
             self.assertEqual(str(processed[1][key2]), str(value2))
         reset_test()
+
+    def test_inserting_multiple_of_same_id(self):
+        test_data = {"CVE_Items": []}
+        problem_type = {"problemtype_data": [{"description": [{"value": "BAD"}]}, {"test": "fail"}]}
+        description = {"description_data": [{"value": "Described"}]}
+        references = {"reference_data": ["TEST"]}
+        affects = {"vendor": {"vendor_data": [{"vendor_name": "vend", "product": {"product_data": [{"product_name": "prod"}]}}]}}
+        cve = {"CVE_data_meta": {"ID": "CV-10", "other": "fail"}, "affects": affects, "problemtype": problem_type, "description": description, "references": references}
+        impact = {"baseMetricV2": {"cvssV2": {"accessVector": "attack", "baseScore": 10}, "severity": "HIGH", "exploitabilityScore":4, "impactScore":2}, "baseMetricV3": {"cvssV3": {"baseScore": 9}, "exploitabilityScore": 3, "impactScore": 1}}
+        test_data["CVE_Items"].append({"cve": cve, "impact": impact, "extra": {"test": "fail"}, "publishedDate": "the month of may", "lastModifiedDate": "2018-10-16T13:44Z"})
+        test_data2 = copy.deepcopy(test_data)
+        test_data2["CVE_Items"][0]["lastModifiedDate"] = "2018-9-16T13:44Z"
+        test_data2["CVE_Items"][0]["cve"]["problemtype"]["problemtype_data"][0]["description"][0]["value"] = "GOOD"
+        test_data3 = copy.deepcopy(test_data)
+        test_data3["CVE_Items"][0]["lastModifiedDate"] = "2018-11-16T13:44Z"
+        test_data3["CVE_Items"][0]["cve"]["problemtype"]["problemtype_data"][0]["description"][0]["value"] = "REALLY BAD"
+        processed = process_input(test_data)
+        processed2 = process_input(test_data2)
+        good_output = [{"ID": "CV-10", "problem_type": "BAD", "references": ["TEST"], "vendors_affected":["vend"], "products_affected":["prod"], "description": "Described", "accessVector": "attack", "severity": "HIGH", "metricV2BaseScore": 10, "metricV3BaseScore": 9, "metricV2ExploitabilityScore": 4, "metricV3ExploitabilityScore": 3, "metricV2ImpactScore": 2, "metricV3ImpactScore": 1, "publishedDate": "the month of may", "lastModifiedDate": "2018-10-16T13:44Z"}]
+        for key, value in good_output[0].items():
+            self.assertEqual(str(processed2[0][key]), str(value))
+        processed3 = process_input(test_data3)
+        good_output[0]["problem_type"] = "REALLY BAD"
+        good_output[0]["lastModifiedDate"] = "2018-11-16T13:44Z"
+        for key2, value2 in good_output[0].items():
+            self.assertEqual(str(processed3[0][key2]), str(value2))
+        reset_test()
+
+        
 
     def test_combined_input_and_processing(self):
         processed_input = test_function()

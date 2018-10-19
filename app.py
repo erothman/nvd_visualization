@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 import json
+import copy
 from flask_jsonpify import jsonify
 from operator import itemgetter
 
@@ -11,7 +12,7 @@ current_data = []
 
 ID_list = []
 
-json_file_info = ["nvdcve-1.0-recent.json"]#, "nvdcve-1.0-modified.json"]
+json_file_info = ["nvdcve-1.0-recent.json"]
 
 #This function is only for the purposes of unit testing. It resets the full_data and current_data back to null to test getting input.
 def reset_test():
@@ -19,7 +20,7 @@ def reset_test():
     global current_data
     global ID_list
     full_data = []
-    current_data= full_data.copy()
+    current_data= []
     ID_list = []
 
 #This function gets input from a json file.
@@ -79,8 +80,12 @@ def process_input(data):
 
         entry["publishedDate"] = i["publishedDate"] if "publishedDate" in i else "N/A"
         entry["lastModifiedDate"] = i["lastModifiedDate"] if "lastModifiedDate" in i else "N/A"
-
-        
+        if entry["lastModifiedDate"] != "N/A":
+            if entry["lastModifiedDate"][6] == "-":
+                entry["lastModifiedDate"] = entry["lastModifiedDate"][:5] + "0" + entry["lastModifiedDate"][5:]
+        if entry["publishedDate"] != "N/A":
+            if entry["publishedDate"][6] == "-":
+                entry["publishedDate"] = entry["lastModifiedDate"][:5] + "0" + entry["lastModifiedDate"][5:]
 
         if entry["ID"] not in ID_list:
             full_data.append(entry)
@@ -90,6 +95,7 @@ def process_input(data):
                 if entry_search["ID"] == entry["ID"]:
                     if entry_search["lastModifiedDate"] == "N/A" or (entry["lastModifiedDate"] > entry_search["lastModifiedDate"] and entry["lastModifiedDate"] != "N/A"):
                         full_data.remove(entry_search)
+                        print(entry["lastModifiedDate"])
                         full_data.append(entry)
                         break
     return full_data
@@ -99,7 +105,7 @@ def test_function():
     data = get_input("testingJsons/test.json")
     process_input(data)
     global current_data
-    current_data = full_data.copy()
+    current_data = copy.deepcopy(full_data)
     return full_data
 
 @app.route('/', methods=['GET', 'POST'])
@@ -108,7 +114,7 @@ def start():
        data = get_input(json)
        process_input(data)
     global current_data
-    current_data = full_data.copy()
+    current_data = copy.deepcopy(full_data)
     return render_template('table.html')
 
 @app.route('/getData', methods=['GET'])
@@ -146,4 +152,4 @@ def get_data_query(queryTerm):
     return jsonify(current_data)
 
 if __name__ == '__main__':
-     app.run(port=5002)
+     app.run(host='localhost', port=8080)
