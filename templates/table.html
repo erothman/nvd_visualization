@@ -20,14 +20,14 @@
     <table class="table table-striped">
       <thead>
         <tr>
-          <th ng-click="getOrganizedData('ID')"> ID <arrow ng-class="(reverse && alphField == 'ID') ? 'decaret' : 'caret'"></arrow></th>
-          <th ng-click="getOrganizedData('problem_type')">Problem Type <arrow ng-class="(reverse && alphField == 'problem_type') ? 'decaret' : 'caret'"></arrow></th>
-          <th ng-click="getOrganizedData('description')">Description <arrow ng-class="(reverse && alphField == 'description') ? 'decaret' : 'caret'"></arrow></th>
-          <th ng-click="getOrganizedData('accessVector')">Access Vector <arrow ng-class="(reverse && alphField == 'accessVector') ? 'decaret' : 'caret'"></arrow></th>
-          <th ng-click="getOrganizedData('severity')">Severity <arrow ng-class="(reverse && alphField == 'severity') ? 'decaret' : 'caret'"></arrow></th>
-          <th ng-click="getOrganizedData('metricV2BaseScore')">MetricV2 Base Score <arrow ng-class="(reverse && alphField == 'metricV2BaseScore') ? 'decaret' : 'caret'"></arrow></th>
-          <th ng-click="getOrganizedData('metricV3BaseScore')">MetricV3 Base Score <arrow ng-class="(reverse && alphField == 'metricV3BaseScore') ? 'decaret' : 'caret'"></arrow></th>
-          <th ng-click="getOrganizedData('publishedDate')">Published Date <arrow ng-class="(reverse && alphField == 'publishedDate') ? 'decaret' : 'caret'"></arrow></th>
+          <th ng-click="getOrganizedData('ID')"> ID <arrow ng-show="alphField == 'ID'" ng-class="(reverse && alphField == 'ID') ? 'decaret' : 'caret'"></arrow></th>
+          <th ng-click="getOrganizedData('problem_type')">Problem Type <arrow ng-show="alphField == 'problem_type'" ng-class="(reverse && alphField == 'problem_type') ? 'decaret' : 'caret'"></arrow></th>
+          <th ng-click="getOrganizedData('description')">Description <arrow ng-show="alphField == 'description'" ng-class="(reverse && alphField == 'description') ? 'decaret' : 'caret'"></arrow></th>
+          <th ng-click="getOrganizedData('accessVector')">Access Vector <arrow ng-show="alphField == 'accessVector'" ng-class="(reverse && alphField == 'accessVector') ? 'decaret' : 'caret'"></arrow></th>
+          <th ng-click="getOrganizedData('severity')">Severity <arrow ng-show="alphField == 'severity'" ng-class="(reverse && alphField == 'severity') ? 'decaret' : 'caret'"></arrow></th>
+          <th ng-click="getOrganizedData('metricV2BaseScore')">MetricV2 Base Score <arrow ng-show="alphField == 'metricV2BaseScore'" ng-class="(reverse && alphField == 'metricV2BaseScore') ? 'decaret' : 'caret'"></arrow></th>
+          <th ng-click="getOrganizedData('metricV3BaseScore')">MetricV3 Base Score <arrow ng-show="alphField == 'metricV3BaseScore'" ng-class="(reverse && alphField == 'metricV3BaseScore') ? 'decaret' : 'caret'"></arrow></th>
+          <th ng-click="getOrganizedData('publishedDate')">Published Date <arrow ng-show="alphField == 'publishedDate'" ng-class="(reverse && alphField == 'publishedDate') ? 'decaret' : 'caret'"></arrow></th>
         </tr>
       </thead>
       <tbody>
